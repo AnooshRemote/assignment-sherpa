@@ -1,0 +1,148 @@
+<div class="container">
+  <div class="header">
+    <h1>Visa Products</h1>
+    <a routerLink="/products/new" class="btn btn-primary">Create New Product</a>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <div class="filter-group">
+      <label>Country:</label>
+      <input
+        type="text"
+        [(ngModel)]="filters.country"
+        (ngModelChange)="onFilterChange()"
+        placeholder="Filter by country"
+        class="filter-input"
+      />
+    </div>
+
+    <div class="filter-group">
+      <label>Visa Type:</label>
+      <input
+        type="text"
+        [(ngModel)]="filters.visaType"
+        (ngModelChange)="onFilterChange()"
+        placeholder="Filter by visa type"
+        class="filter-input"
+      />
+    </div>
+
+    <div class="filter-group">
+      <label>Min Price (USD):</label>
+      <input
+        type="number"
+        [(ngModel)]="filters.minPrice"
+        (ngModelChange)="onFilterChange()"
+        placeholder="Min"
+        class="filter-input"
+        min="0"
+      />
+    </div>
+
+    <div class="filter-group">
+      <label>Max Price (USD):</label>
+      <input
+        type="number"
+        [(ngModel)]="filters.maxPrice"
+        (ngModelChange)="onFilterChange()"
+        placeholder="Max"
+        class="filter-input"
+        min="0"
+      />
+    </div>
+
+    <div class="filter-group">
+      <label>Entries:</label>
+      <select
+        [(ngModel)]="filters.numberOfEntries"
+        (ngModelChange)="onFilterChange()"
+        class="filter-input"
+      >
+        <option [value]="undefined">All</option>
+        <option value="Single">Single</option>
+        <option value="Multiple">Multiple</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label>Currency:</label>
+      <select
+        [(ngModel)]="selectedCurrency"
+        (ngModelChange)="onCurrencyChange()"
+        class="filter-input"
+      >
+        <option *ngFor="let currency of supportedCurrencies" [value]="currency">
+          {{ currency }}
+        </option>
+      </select>
+    </div>
+
+    <button (click)="clearFilters()" class="btn btn-secondary">Clear Filters</button>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="error-message">{{ error }}</div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading">Loading products...</div>
+
+  <!-- Products Table -->
+  <div *ngIf="!loading && products.length > 0" class="table-container">
+    <table class="products-table">
+      <thead>
+        <tr>
+          <th>Country</th>
+          <th>Visa Type</th>
+          <th>Price</th>
+          <th>Length of Stay (Days)</th>
+          <th>Entries</th>
+          <th>Filing Fee</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of products">
+          <td>{{ product.country }}</td>
+          <td>{{ product.visaType }}</td>
+          <td>{{ getCurrencySymbol() }}{{ getPrice(product).toFixed(2) }}</td>
+          <td>{{ product.lengthOfStay }}</td>
+          <td>{{ product.numberOfEntries }}</td>
+          <td>${{ product.filingFee.toFixed(2) }}</td>
+          <td class="actions">
+            <a [routerLink]="['/products', product.id]" class="btn btn-sm btn-info">View</a>
+            <a [routerLink]="['/products', product.id, 'edit']" class="btn btn-sm btn-warning">Edit</a>
+            <button (click)="deleteProduct(product.id)" class="btn btn-sm btn-danger">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && products.length === 0" class="empty-state">
+    <p>No products found. Try adjusting your filters or create a new product.</p>
+  </div>
+
+  <!-- Pagination -->
+  <div *ngIf="!loading && totalPages > 1" class="pagination">
+    <button
+      (click)="goToPage(page - 1)"
+      [disabled]="page === 1"
+      class="btn btn-secondary"
+    >
+      Previous
+    </button>
+    <span class="page-info">
+      Page {{ page }} of {{ totalPages }} ({{ total }} total products)
+    </span>
+    <button
+      (click)="goToPage(page + 1)"
+      [disabled]="page === totalPages"
+      class="btn btn-secondary"
+    >
+      Next
+    </button>
+  </div>
+</div>
+

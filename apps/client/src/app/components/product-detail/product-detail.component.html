@@ -1,0 +1,70 @@
+<div class="container">
+  <div *ngIf="loading" class="loading">Loading product...</div>
+  
+  <div *ngIf="error" class="error-message">{{ error }}</div>
+
+  <div *ngIf="product && !loading" class="product-detail">
+    <div class="header">
+      <h1>{{ product.country }} - {{ product.visaType }}</h1>
+      <div class="actions">
+        <a [routerLink]="['/products', product.id, 'edit']" class="btn btn-warning">Edit</a>
+        <button (click)="deleteProduct()" class="btn btn-danger">Delete</button>
+        <a routerLink="/products" class="btn btn-secondary">Back to List</a>
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <div class="currency-selector">
+        <label>View Price in:</label>
+        <select [(ngModel)]="selectedCurrency" (ngModelChange)="onCurrencyChange()" class="currency-select">
+          <option *ngFor="let currency of supportedCurrencies" [value]="currency">
+            {{ currency }}
+          </option>
+        </select>
+      </div>
+
+      <div class="detail-grid">
+        <div class="detail-item">
+          <label>Country</label>
+          <div class="value">{{ product.country }}</div>
+        </div>
+
+        <div class="detail-item">
+          <label>Visa Type</label>
+          <div class="value">{{ product.visaType }}</div>
+        </div>
+
+        <div class="detail-item">
+          <label>Price</label>
+          <div class="value price">{{ getCurrencySymbol() }}{{ getPrice().toFixed(2) }}</div>
+        </div>
+
+        <div class="detail-item">
+          <label>Length of Stay</label>
+          <div class="value">{{ product.lengthOfStay }} days</div>
+        </div>
+
+        <div class="detail-item">
+          <label>Number of Entries</label>
+          <div class="value">{{ product.numberOfEntries }}</div>
+        </div>
+
+        <div class="detail-item">
+          <label>Filing Fee</label>
+          <div class="value">${{ product.filingFee.toFixed(2) }}</div>
+        </div>
+
+        <div class="detail-item">
+          <label>Created At</label>
+          <div class="value">{{ product.createdAt | date: 'medium' }}</div>
+        </div>
+
+        <div class="detail-item">
+          <label>Last Updated</label>
+          <div class="value">{{ product.updatedAt | date: 'medium' }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
